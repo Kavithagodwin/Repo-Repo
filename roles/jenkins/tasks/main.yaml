@@ -1,0 +1,29 @@
+---
+
+  - name: Install a list of packages
+    yum:
+      name:
+        - java-1.8.0-openjdk
+        - wget
+        - git
+      state: present
+
+  - name: Download Jenkins repo
+    get_url:
+      url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+      dest: /etc/yum.repos.d/jenkins.repo
+
+  - name: Import Jenkins Key
+    command: sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+  - name: Install Jenkins packages
+    yum:
+      name:
+        - jenkins
+      state: present
+
+  - name: Jenkins Service Start
+    systemd:
+      state: started
+      name: jenkins
+      enabled: yes
