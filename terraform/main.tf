@@ -2,10 +2,17 @@ resource "aws_instance" "devops-2022" {
   ami           = var.ami_id
   instance_type = var.inst_type
   subnet_id   = var.sub_id
-  count = 1
+  count = 2
+  user_data = <<-EOF
+  	#! /bin/bash
+ 	sudo yum install httpd
+    	sudo echo "hello terraform" > /var/www/html/index.html
+	sudo systemctl enable httpd
+        EOF
+ 
 
   tags = {
-    Name = "pradeep-terraform"
+    Name = "kavitha-terraform-$(count.index+1)"
   }
 }
 
@@ -32,4 +39,8 @@ resource "aws_security_group" "pradeep_sg" {
   tags = {
     Name = "allow_tls"
   }
+}
+
+output "instance_ip" {
+    value = ["$(aws_instance.devops-2022.*.public_ip)"]
 }
